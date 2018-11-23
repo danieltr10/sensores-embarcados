@@ -49,6 +49,7 @@ def on_message(client, userdata, msg):
     # Rerencia de códigos da placa GPRS https://www.makerfabs.com/desfile/files/A6A7A6CA20_AT_Commends.pdf
     print(msg.topic + " " + str(msg.payload))
     callTo(lucasNumber)
+    sendSMS(lucasNumber, 'Atenção: houve uma invasão no cofre!')
 
 
 client = mqtt.Client()
