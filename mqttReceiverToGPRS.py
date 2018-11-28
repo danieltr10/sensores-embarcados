@@ -8,31 +8,39 @@ MQTT_PATH = "sensor"
 MQTT_USER = "username"
 MQTT_PASSWORD = "grupo6"
 
-lucasNumber = '+5511987725802'
+mauricioSMS = '+5511987725802'
+mauricioCall = '011987725802'
 
 
 def callTo(phoneNumber):
-    ser = serial.Serial('/dev/ttyS0')  # open serial port
+    ser = serial.Serial(port='/dev/ttyS0', baudrate=115200, bytesize=8, parity='N', stopbits=1, timeout=1, xonxoff=False, rtscts=False, dsrdtr=False)  # open serial port
     print(ser.name) # check which port was really used
     time.sleep(0.4)
     ser.write('AT') # Return to online command state from online data state
     time.sleep(1)
-    ser.write('ATD') # make a call
-    ser.write(phoneNumber) # make a call
-    time.sleep(8)
+    ser.write('ATD' + phoneNumber + ';') # make a call
+    time.sleep(5)
     ser.write('ATH') # Disconnect existing call
     ser.close() # close port
 
 def sendSMS(phoneNumber, text):
-    ser = serial.Serial('/dev/ttyS0')  # open serial port
+    ser = serial.Serial(port='/dev/ttyS0', baudrate=115200, bytesize=8, parity='N', stopbits=1, timeout=1, xonxoff=False, rtscts=False, dsrdtr=False)  # open serial port
     print(ser.name) # check which port was really used
     time.sleep(0.4)
-    ser.write('AT+CMGF=1') # Configuring TEXT mode
-    ser.write("AT+CMGS=\"" + phoneNumber + "\"")
-    ser.write(text)
-    packet = bytearray()
-    packet.append(0x26) # send ctrl+z command indicating the text end
-    ser.write(packet)
+    setTextModeCmd="AT+CMGF=1\r"
+    ser.write(setTextModeCmd.encode()) # Configuring TEXT mode
+    time.sleep(1)
+    print(ser.readall())
+    smsCmd="AT+CMGS=\"" + phoneNumber + "\"\r"
+    ser.write(smsCmd.encode())
+    time.sleep(1)
+    print(ser.readall())
+    ser.write(text.encode())
+    time.sleep(1)
+    print(ser.readall())
+    ser.write(chr(26))
+    time.sleep(1)
+    print(ser.readall())
     ser.close() # close port
 
 def on_connect(client, userdata, flags, rc):
@@ -46,11 +54,9 @@ def on_connect(client, userdata, flags, rc):
 
 
 def on_message(client, userdata, msg):
-    # Rerencia de códigos da placa GPRS https://www.makerfabs.com/desfile/files/A6A7A6CA20_AT_Commends.pdf
+    # Rerencia de codigos da placa GPRS https://www.makerfabs.com/desfile/files/A6A7A6CA20_AT_Commends.pdf
     print(msg.topic + " " + str(msg.payload))
-    callTo(lucasNumber)
-    sendSMS(lucasNumber, 'Atenção: houve uma invasão no cofre!')
-
+    sendSMS(mauricioSMS, 'PERIGO: SISTEMA DE SEGURANCA ATIVADO!')
 
 client = mqtt.Client()
 client.on_connect = on_connect
