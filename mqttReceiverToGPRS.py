@@ -11,6 +11,7 @@ MQTT_PASSWORD = "grupo6"
 mauricioSMS = '+5511987725802'
 mauricioCall = '011987725802'
 
+isSystemOn = False
 
 def callTo(phoneNumber):
     ser = serial.Serial(port='/dev/ttyS0', baudrate=115200, bytesize=8, parity='N', stopbits=1, timeout=1, xonxoff=False, rtscts=False, dsrdtr=False)  # open serial port
@@ -56,7 +57,10 @@ def on_connect(client, userdata, flags, rc):
 def on_message(client, userdata, msg):
     # Rerencia de codigos da placa GPRS https://www.makerfabs.com/desfile/files/A6A7A6CA20_AT_Commends.pdf
     print(msg.topic + " " + str(msg.payload))
-    sendSMS(mauricioSMS, 'PERIGO: SISTEMA DE SEGURANCA ATIVADO!')
+    if (msg.topic == 'botao'):
+        isSystemOn = not (isSystemOn)
+    else:
+        sendSMS(mauricioSMS, 'PERIGO: SISTEMA DE SEGURANCA ATIVADO!')
 
 client = mqtt.Client()
 client.on_connect = on_connect
