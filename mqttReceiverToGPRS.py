@@ -57,7 +57,7 @@ def on_connect(client, userdata, flags, rc):
 def on_message(client, userdata, msg):
     # Rerencia de codigos da placa GPRS https://www.makerfabs.com/desfile/files/A6A7A6CA20_AT_Commends.pdf
     print(msg.topic + " " + str(msg.payload))
-    if (msg.topic == 'botao'):
+    if (msg.topic == 'esp/controle'):
         isSystemOn = not (isSystemOn)
     else:
         sendSMS(mauricioSMS, 'PERIGO: SISTEMA DE SEGURANCA ATIVADO!')
