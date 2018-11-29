@@ -63,6 +63,10 @@ def on_message(client, userdata, msg):
     print(msg.topic + " " + str(msg.payload))
     if (msg.topic == 'esp/controle'):
         isSystemOn = not (isSystemOn)
+        if (isSystemOn):
+            sendSMS(mauricioSMS, 'Sistema de segurança operando ...')
+        else:
+            sendSMS(mauricioSMS, 'Sistema de segurança desligado!')
     else:
         if (!isSystemOn):
             return
