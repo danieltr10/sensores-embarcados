@@ -13,6 +13,8 @@ mauricioCall = '011987725802'
 
 isSystemOn = False
 
+shouldSensSMS = False
+
 def callTo(phoneNumber):
     ser = serial.Serial(port='/dev/ttyS0', baudrate=115200, bytesize=8, parity='N', stopbits=1, timeout=1, xonxoff=False, rtscts=False, dsrdtr=False)  # open serial port
     print(ser.name) # check which port was really used
@@ -25,6 +27,8 @@ def callTo(phoneNumber):
     ser.close() # close port
 
 def sendSMS(phoneNumber, text):
+    if (!shouldSensSMS):
+        return
     ser = serial.Serial(port='/dev/ttyS0', baudrate=115200, bytesize=8, parity='N', stopbits=1, timeout=1, xonxoff=False, rtscts=False, dsrdtr=False)  # open serial port
     print(ser.name) # check which port was really used
     time.sleep(0.4)
@@ -60,7 +64,15 @@ def on_message(client, userdata, msg):
     if (msg.topic == 'esp/controle'):
         isSystemOn = not (isSystemOn)
     else:
-        sendSMS(mauricioSMS, 'PERIGO: SISTEMA DE SEGURANCA ATIVADO!')
+        if (msg.payload == 'luz'):
+            sendSMS(mauricioSMS, 'PERIGO: COFRE ABERTO!')
+            shouldSensSMS = False
+        if (msg.payload == 'solto'):
+            sendSMS(mauricioSMS, 'PERIGO: COFRE VIOLADO!')
+            shouldSensSMS = False
+        if (msg.payload == 'presente')
+        if (msg.payload == 'ok' or msg.payload == 'pressionado' or msg.payload == 'faltou'):
+            shouldSensSMS = True
 
 client = mqtt.Client()
 client.on_connect = on_connect
