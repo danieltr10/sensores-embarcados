@@ -64,13 +64,17 @@ def on_message(client, userdata, msg):
     if (msg.topic == 'esp/controle'):
         isSystemOn = not (isSystemOn)
     else:
+        if (!isSystemOn):
+            return
         if (msg.payload == 'luz'):
             sendSMS(mauricioSMS, 'PERIGO: COFRE ABERTO!')
             shouldSensSMS = False
         if (msg.payload == 'solto'):
             sendSMS(mauricioSMS, 'PERIGO: COFRE VIOLADO!')
             shouldSensSMS = False
-        if (msg.payload == 'presente')
+        if (msg.payload == 'presente'):
+            sendSMS(mauricioSMS, 'PERIGO: MOVIMENTO DETECTADO!')
+            shouldSensSMS = False
         if (msg.payload == 'ok' or msg.payload == 'pressionado' or msg.payload == 'faltou'):
             shouldSensSMS = True
 
